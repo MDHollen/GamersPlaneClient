@@ -18,22 +18,25 @@ A Discord bot can be created using the Discord Developer Portal: https://discord
 The "forums" field is a list containing a dict for each forum, describing which threads to monitor.
 
 The config.json should look something like this:
-{
-    "update_offset": <int>,
-    "gp_auth": {
-        "username": <str>,
-        "password": <str>,
-    },
-    "discord_auth": {
-        "bot_token": <str>,
-        "channel_id": <str>,
+
+    {
+        "update_offset": <int>,
+
+        "gp_auth": {
+            "username": <str>,
+            "password": <str>,
+        },
+        "discord_auth": {
+            "bot_token": <str>,
+            "channel_id": <str>,
+        }
+        "forums": [
+            {
+                "name": <str>,
+                "id": <int>,
+                "threads": [
+                    <str>, ...
+                ]
+            }, ...
+        ]
     }
-    "forums": [
-        {
-            "name": <str>,
-            "id": <int>,
-            "threads": [
-                <str>, ...
-            ]
-        }, ...
-    ]
