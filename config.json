@@ -1,0 +1,21 @@
+{
+    "update_offset": 11,
+    "gp_auth": {
+        "username": "username",
+        "password": "password"
+    },
+    "discord_auth": {
+        "bot_token": "TOKEN",
+        "channel_id": "CHANNEL_ID"
+    },
+    "forums": [
+        {
+            "name": "Forum Name",
+	    "id": forum_id,
+	    "threads": [
+                "Thread name 1",
+                "Thread name 2"
+            ]
+        }
+    ]
+}
