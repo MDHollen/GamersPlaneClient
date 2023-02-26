@@ -52,13 +52,20 @@ def _check_for_updates(forum_name, forum_id, watched_threads, update_offset):
         and "lastPost#lastPost" in a["href"]
     ]
     last_post_list = []
+    last_poster_list = []
     for last_post_href in last_post_href_list:
         thread_url = f"{gp_url}{last_post_href}"
         thread_html = session.get(thread_url)
         thread_info = BeautifulSoup(thread_html.text, "html.parser")
         last_post = thread_info.find_all("div", "post")[-2].text
         last_post_list.append(last_post)
-
+        poster_info = thread_info.find_all("div", "postNames")[-2]
+        poster_name = poster_info.find("p", "posterName").find("a", "username").text
+        try:
+            char_name = poster_info.find("p", "charName").find("a").text
+        except:
+            char_name = None
+        last_poster_list.append((char_name, poster_name))
 
     # Get current time, using UTC (+8 from PST) - since GP also uses UTC on back-end.
     tzinfo = timezone(timedelta(hours=0))
@@ -75,7 +82,7 @@ def _check_for_updates(forum_name, forum_id, watched_threads, update_offset):
     # For each thread, check if thread merits an update and check if it has updated.
     time_offset = update_offset * 60
     updated_threads = []
-    for thread_name, post_time, last_post in zip(thread_names, post_time_list, last_post_list):
+    for thread_name, post_time, last_post, last_poster in zip(thread_names, post_time_list, last_post_list, last_poster_list):
         if thread_name in watched_threads:
             time_diff = current_time - post_time
             if time_diff.seconds <= time_offset and time_diff.days == 0:
@@ -85,6 +92,7 @@ def _check_for_updates(forum_name, forum_id, watched_threads, update_offset):
                         "thread_name": thread_name,
                         "last_post_time": post_time.replace(tzinfo=timezone(timedelta(hours=-8)), second=0, microsecond=0) + timedelta(hours=-8),
                         "last_post": last_post,
+                        "last_poster": last_poster,
                     }
                 )
 
@@ -104,7 +112,10 @@ def _notify_user(updated_forum_list, discord_auth):
 
     message = f"Got an update in the following threads:\n"
     for forum_update in updated_forum_list:
-        message += f"\n**{forum_update['forum_name']}** - ***{forum_update['thread_name']}*** updated at {forum_update['last_post_time']}:\n"
+        message += f"\n**{forum_update['forum_name']}** - *{forum_update['thread_name']}* updated by "
+        message += f"***{forum_update['last_poster'][0]} ({forum_update['last_poster'][1]})*** " \
+        if forum_update["last_poster"][0] else f"***{forum_update['last_poster'][1]}***"
+        message == f"at {forum_update['last_post_time']}:\n"
         message += f"*{forum_update['last_post'][1:300]}...*"
 
     @client.event
