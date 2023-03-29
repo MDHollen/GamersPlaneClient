@@ -119,8 +119,8 @@ def _notify_user(updated_forum_list, discord_auth):
     message = f"Got an update in the following threads:\n"
     for forum_update in updated_forum_list:
         message += f"\n**{forum_update['forum_name']}** - *{forum_update['thread_name']}* updated by "
-        message += f"***{forum_update['last_char']} ({forum_update['last_poster']})*** " \
-        if forum_update["last_char"] else f"***{forum_update['last_poster']}*** "
+        message += f"***{forum_update['last_char']} ({forum_update['last_poster']})***:\n\n" \
+                if forum_update["last_char"] else f"***{forum_update['last_poster']}***:\n\n"
         message == f"at {forum_update['last_post_time']}:\n"
         message += f"*{forum_update['last_post'][0:300].strip()}*"
         if len(forum_update['last_post']) > 300:
